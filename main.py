@@ -16,4 +16,6 @@ I = L/2 #half length
 #other
 g = 9.81 #gravitational acceleration
 delta_h = (L/2)*(1-math.cos(alpha)) #height difference center pendulum rel. to ref. pos.
+tau_theta = 0 #torque from the motor
 
+#discuss differentiation of alpha and theta
