@@ -1,7 +1,7 @@
 import math
 
 import numpy as np
-
+import matplotlib as plt
 # variables
 # arm
 theta = 0  # arm angle
@@ -61,3 +61,7 @@ t4, v4 = euler(0, 0, 0.3, f4)
 
 # plot the solution
 # TODO: add matplotlib and plot the good stuff
+plt.plot(t1,v1)
+plt.plot(t2,v2)
+plt.plot(t3,v3)
+plt.plot(t4,v4)
