@@ -1,7 +1,9 @@
 import math
 
-import numpy as np
 import matplotlib as plt
+import numpy as np
+import scipy
+
 # variables
 # arm
 theta = 0  # arm angle
@@ -12,7 +14,7 @@ r = 3  # arm length
 alpha = 0  # angle
 m_alpha = 3  # mass
 L = 5  # length
-I = L / 2  # half length
+l = L / 2  # half length
 
 # other constants
 g = 9.81  # gravitational acceleration
@@ -25,8 +27,8 @@ tau_theta = 0  # torque from the motor
 
 # discuss differentiation of alpha and theta
 # define the 4 ODEs that shall be sovlved
-def f1():
-    pass
+def f1(theta):
+    return theta
 
 
 def f2():
@@ -61,7 +63,8 @@ t4, v4 = euler(0, 0, 0.3, f4)
 
 # plot the solution
 # TODO: add matplotlib and plot the good stuff
-plt.plot(t1,v1)
-plt.plot(t2,v2)
-plt.plot(t3,v3)
-plt.plot(t4,v4)
+plt.plot(t1, v1)
+plt.plot(t2, v2)
+plt.plot(t3, v3)
+plt.plot(t4, v4)
+
