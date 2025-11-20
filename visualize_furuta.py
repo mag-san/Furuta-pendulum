@@ -1,15 +1,41 @@
+import argparse
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
+from matplotlib.widgets import Button
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.integrate import solve_ivp
 
+from euler_backward import euler_backward
+from euler_forward import euler_forward
 from system_ode import furuta_pendulum
 
 """
 this code was generated using claude code. It uses the outputs from solve_ivp to vizualize
 the pendulumswings over time
 """
+
+
+class SolutionWrapper:
+    """Wrapper to standardize interface between solve_ivp and euler methods."""
+
+    def __init__(self, t, y):
+        """
+        Args:
+            t: Time array
+            y: Solution array (can be from solve_ivp or euler methods)
+        """
+        self.t = t
+        if hasattr(y, "shape") and len(y.shape) == 2:
+            # If y is (n_states, n_time) from solve_ivp, keep as is
+            if y.shape[0] < y.shape[1]:
+                self.y = y
+            # If y is (n_time, n_states) from euler methods, transpose
+            else:
+                self.y = y.T
+        else:
+            self.y = y
 
 
 def compute_positions(theta, alpha, r, L):
@@ -45,28 +71,32 @@ def compute_positions(theta, alpha, r, L):
 class FurutaPendulumAnimation:
     """Animated visualization of the Furuta pendulum."""
 
-    def __init__(self, sol, params, trail_length=50):
+    def __init__(self, solutions, params, trail_length=50):
         """
         Initialize the animation.
 
         Args:
-            sol: Solution object from solve_ivp
+            solutions: Dictionary of solutions {solver_name: solution_object}
             params: Dictionary of pendulum parameters
             trail_length: Number of previous positions to show as trail
         """
-        self.sol = sol
+        self.solutions = solutions
         self.params = params
         self.r = params["r"]
         self.L = params["L"]
         self.trail_length = trail_length
 
+        # Start with RK45 as default
+        self.current_solver = "RK45"
+        self.sol = solutions["RK45"]
+
         # Extract solution data
-        self.t = sol.t
-        self.theta = sol.y[0]  # Arm angle
-        self.alpha = sol.y[2]  # Pendulum angle
+        self.t = self.sol.t
+        self.theta = self.sol.y[0]  # Arm angle
+        self.alpha = self.sol.y[2]  # Pendulum angle
 
         # Setup figure and 3D axis
-        self.fig = plt.figure(figsize=(14, 6))
+        self.fig = plt.figure(figsize=(14, 7))
         self.ax = self.fig.add_subplot(121, projection="3d")
 
         # Setup plot limits
@@ -78,7 +108,7 @@ class FurutaPendulumAnimation:
         self.ax.set_xlabel("X [m]")
         self.ax.set_ylabel("Y [m]")
         self.ax.set_zlabel("Z [m]")
-        self.ax.set_title("Furuta Pendulum Animation")
+        self.title = self.ax.set_title(f"Furuta Pendulum Animation - {self.current_solver}")
 
         # Initialize plot elements
         (self.arm_line,) = self.ax.plot([], [], [], "b-", linewidth=3, label="Arm")
@@ -129,6 +159,73 @@ class FurutaPendulumAnimation:
         self.trail_x = []
         self.trail_y = []
         self.trail_z = []
+
+        # Add interactive buttons for solver selection
+        button_height = 0.04
+        button_width = 0.12
+        button_y = 0.02
+
+        # RK45 button
+        ax_rk45 = plt.axes([0.15, button_y, button_width, button_height])
+        self.btn_rk45 = Button(ax_rk45, "RK45", color="lightgreen", hovercolor="green")
+        self.btn_rk45.on_clicked(lambda event: self.switch_solver("RK45"))
+
+        # Euler Forward button
+        ax_euler_fwd = plt.axes([0.30, button_y, button_width, button_height])
+        self.btn_euler_fwd = Button(ax_euler_fwd, "Euler Forward", color="lightblue", hovercolor="blue")
+        self.btn_euler_fwd.on_clicked(lambda event: self.switch_solver("EULER FORWARD"))
+
+        # Euler Backward button
+        ax_euler_bwd = plt.axes([0.45, button_y, button_width, button_height])
+        self.btn_euler_bwd = Button(ax_euler_bwd, "Euler Backward", color="lightcoral", hovercolor="red")
+        self.btn_euler_bwd.on_clicked(lambda event: self.switch_solver("EULER BACKWARD"))
+
+        # Animation control
+        self.paused = False
+        self.current_frame = 0
+
+    def switch_solver(self, solver_name):
+        """Switch to a different solver solution."""
+        if solver_name in self.solutions:
+            self.current_solver = solver_name
+            self.sol = self.solutions[solver_name]
+
+            # Update solution data
+            self.t = self.sol.t
+            self.theta = self.sol.y[0]
+            self.alpha = self.sol.y[2]
+
+            # Recompute energy for new solution
+            self.energy = self._compute_energy()
+
+            # Update title
+            self.title.set_text(f"Furuta Pendulum Animation - {self.current_solver}")
+
+            # Clear trail
+            self.trail_x = []
+            self.trail_y = []
+            self.trail_z = []
+
+            # Update time series plots
+            self.ax_theta.lines[0].set_data(self.t, self.theta)
+            self.ax_alpha.lines[0].set_data(self.t, self.alpha)
+            self.ax_energy.lines[0].set_data(self.t, self.energy)
+
+            # Reset autoscale for plots
+            self.ax_theta.relim()
+            self.ax_theta.autoscale_view()
+            self.ax_alpha.relim()
+            self.ax_alpha.autoscale_view()
+            self.ax_energy.relim()
+            self.ax_energy.autoscale_view()
+
+            # Force redraw of the figure
+            self.fig.canvas.draw_idle()
+
+            # Reset animation to beginning
+            self.current_frame = 0
+
+            print(f"Switched to {solver_name}")
 
     def _compute_energy(self):
         """Compute total mechanical energy at each time step."""
@@ -269,6 +366,18 @@ class FurutaPendulumAnimation:
 
 def main():
     """Run the Furuta pendulum visualization."""
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description="Visualize Furuta pendulum with different solvers"
+    )
+    parser.add_argument(
+        "--step-size",
+        type=float,
+        default=0.001,
+        help="Step size for Euler methods (default: 0.001)",
+    )
+    args = parser.parse_args()
+
     # Pendulum parameters
     params = {
         "m_alpha": 0.50,  # pendulum mass [kg]
@@ -285,10 +394,14 @@ def main():
 
     # Time span
     t_span = (0, 10)
-    t_eval = np.linspace(0, 10, 500)
 
-    print("Solving ODE system...")
-    sol = solve_ivp(
+    print("Computing solutions with all three solvers...")
+    print("This may take a moment...")
+
+    # Solve using RK45
+    print("  - Solving with RK45...")
+    t_eval = np.linspace(0, 10, 500)
+    sol_rk45 = solve_ivp(
         fun=lambda t, x: furuta_pendulum(t, x, params),
         t_span=t_span,
         y0=x0,
@@ -296,8 +409,44 @@ def main():
         method="RK45",
     )
 
-    print("Creating animation...")
-    animator = FurutaPendulumAnimation(sol, params, trail_length=50)
+    # Solve using Euler Forward
+    print("  - Solving with Euler Forward...")
+    t_ef, y_ef = euler_forward(
+        f=lambda t, x: furuta_pendulum(t, x, params),
+        t_span=t_span,
+        y0=x0,
+        h=args.step_size,
+    )
+    # Downsample to match RK45 time points for consistent animation
+    indices_ef = np.searchsorted(t_ef, t_eval)
+    indices_ef = np.clip(indices_ef, 0, len(t_ef) - 1)
+    sol_euler_fwd = SolutionWrapper(t_eval, y_ef[indices_ef])
+
+    # Solve using Euler Backward
+    print("  - Solving with Euler Backward...")
+    t_eb, y_eb = euler_backward(
+        f=lambda t, x: furuta_pendulum(t, x, params),
+        t_span=t_span,
+        y0=x0,
+        h=args.step_size,
+    )
+    # Downsample to match RK45 time points for consistent animation
+    indices_eb = np.searchsorted(t_eb, t_eval)
+    indices_eb = np.clip(indices_eb, 0, len(t_eb) - 1)
+    sol_euler_bwd = SolutionWrapper(t_eval, y_eb[indices_eb])
+
+    # Create solutions dictionary
+    solutions = {
+        "RK45": sol_rk45,
+        "EULER FORWARD": sol_euler_fwd,
+        "EULER BACKWARD": sol_euler_bwd,
+    }
+
+    print("All solutions computed!")
+    print("\nCreating interactive animation...")
+    print("Use the buttons at the bottom to switch between solvers!")
+
+    animator = FurutaPendulumAnimation(solutions, params, trail_length=50)
 
     # To save animation, uncomment and provide path:
     # animator.animate(interval=20, save_path='furuta_pendulum.gif')

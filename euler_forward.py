@@ -1,70 +1,37 @@
-import math
-
-import matplotlib as plt
 import numpy as np
-import scipy
-
-# variables
-# arm
-theta = 0  # arm angle
-m_theta = 2  # arm mass
-r = 3  # arm length
-
-# pendulum
-alpha = 0  # angle
-m_alpha = 3  # mass
-L = 5  # length
-l = L / 2  # half length
-
-# other constants
-g = 9.81  # gravitational acceleration
-delta_h = (L / 2) * (
-    1 - math.cos(alpha)
-)  # height difference center pendulum rel. to ref. pos.
-t_max = 10  # maximum t value
-tau_theta = 0  # torque from the motor
 
 
-# discuss differentiation of alpha and theta
-# define the 4 ODEs that shall be sovlved
-def f1(theta):
-    return theta
+def euler_forward(f, t_span, y0, h):
+    """
+    Euler forward method for solving ODEs.
 
+    Parameters:
+    -----------
+    f : callable
+        Function f(t, y) that returns dy/dt
+    t_span : tuple
+        (t0, tf) start and end times
+    y0 : array_like
+        Initial conditions
+    h : float
+        Step size
 
-def f2():
-    pass
+    Returns:
+    --------
+    t : ndarray
+        Time points
+    y : ndarray
+        Solution at each time point (shape: [n_steps, n_states])
+    """
+    t0, tf = t_span
+    t = np.arange(t0, tf + h, h)
+    n_steps = len(t)
+    n_states = len(y0)
 
+    y = np.zeros((n_steps, n_states))
+    y[0] = y0
 
-def f3():
-    pass
+    for i in range(n_steps - 1):
+        y[i + 1] = y[i] + h * f(t[i], y[i])
 
-
-def f4():
-    pass
-
-
-# define the eiler forward method that will be used to solve the ODEs
-def euler(v0, t0, h, f):
-    v = [v0]
-    t = [t0]
-    while v[-1] <= t_max:
-        v_new = v[-1] + h * f(v[-1], t[-1])
-        t_new = t[-1] + h
-        v.append(v_new)
-        t.append(t_new)
-    return t, v
-
-
-# solving with various timesteps
-t1, v1 = euler(0, 0, 0.3, f1)
-t2, v2 = euler(0, 0, 0.3, f2)
-t3, v3 = euler(0, 0, 0.3, f3)
-t4, v4 = euler(0, 0, 0.3, f4)
-
-# plot the solution
-# TODO: add matplotlib and plot the good stuff
-plt.plot(t1, v1)
-plt.plot(t2, v2)
-plt.plot(t3, v3)
-plt.plot(t4, v4)
-
+    return t, y

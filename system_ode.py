@@ -58,22 +58,6 @@ def build_C_matrix(alpha, L, r, m_theta, m_alpha):
     )
 
 
-def D(theta_dot, alpha, alpha_dot, L, r, m_alpha, g=9.81):
-    return (
-        L
-        * np.sin(alpha)
-        * np.array(
-            [
-                [
-                    2 * m_alpha * L / 3 * theta_dot * alpha_dot * np.cos(alpha)
-                    - m_alpha / 2 * r * alpha_dot**2
-                ],
-                [-m_alpha * L / 3 * theta_dot**2 * np.cos(alpha) + m_alpha / 2 * g],
-            ]
-        )
-    )
-
-
 def compute_D_vector(theta_dot, alpha, alpha_dot, L, r, m_alpha, g=9.81):
     return (
         L
@@ -96,5 +80,5 @@ def C_inv(alpha, L, r, m_theta, m_alpha):
 
 def F(theta_dot, alpha, alpha_dot, tau, L, r, m_theta, m_alpha, g=9.81):
     return C_inv(alpha, L, r, m_theta, m_alpha) @ (
-        tau - D(theta_dot, alpha, alpha_dot, L, r, m_alpha, g)
+        tau - compute_D_vector(theta_dot, alpha, alpha_dot, L, r, m_alpha, g)
     )

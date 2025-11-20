@@ -1,96 +1,44 @@
-import math
-
-import matplotlib as plt
 import numpy as np
+from scipy.optimize import fsolve
 
 
-def newton(f, f_der, n, x0):
-    x = x0
-    for i in range(n):
-        x = x - f(x) / f_der(x)
-    return x
+def euler_backward(f, t_span, y0, h):
+    """
+    Euler backward (implicit) method for solving ODEs.
 
+    Parameters:
+    -----------
+    f : callable
+        Function f(t, y) that returns dy/dt
+    t_span : tuple
+        (t0, tf) start and end times
+    y0 : array_like
+        Initial conditions
+    h : float
+        Step size
 
-# variables
-# arm
-theta = 0  # arm angle
-m_theta = 2  # arm mass
-r = 3  # arm length
+    Returns:
+    --------
+    t : ndarray
+        Time points
+    y : ndarray
+        Solution at each time point (shape: [n_steps, n_states])
+    """
+    t0, tf = t_span
+    t = np.arange(t0, tf + h, h)
+    n_steps = len(t)
+    n_states = len(y0)
 
-# pendulum
-alpha = 0  # angle
-m_alpha = 3  # mass
-L = 5  # length
-I = L / 2  # half length
+    y = np.zeros((n_steps, n_states))
+    y[0] = y0
 
-# other constants
-g = 9.81  # gravitational acceleration
-delta_h = (L / 2) * (
-    1 - math.cos(alpha)
-)  # height difference center pendulum rel. to ref. pos.
-t_max = 10  # maximum t value
-tau_theta = 0  # torque from the motor
-
-
-# discuss differentiation of alpha and theta
-# define the 4 ODEs that shall be sovlved
-def f1():
-    pass
-
-
-def f1_der():
-    pass
-
-
-def f2():
-    pass
-
-
-def f2_der():
-    pass
-
-
-def f3():
-    pass
-
-
-def f3_der():
-    pass
-
-
-def f4():
-    pass
-
-
-def f4_der():
-    pass
-
-
-# define the eiler forward method that will be used to solve the ODEs
-def impl_euler(v0, t0, h, f, f_der, n_n):
-    v = [v0]
-    t = [t0]
-    while v[-1] <= t_max:
+    for i in range(n_steps - 1):
 
         def F(u):
-            return u - v[-1] - h * f(t[-1], u)
+            return u - y[i] - h * f(t[i + 1], u)
 
-        def F_der(u):
-            return 1 - h * f_der(t[-1], u)
+        y_guess = y[i]
 
-        v_new = newton(F, F_der, n_n, v[-1])
-        t_new = t[-1] + h
-        v.append(v_new)
-        t.append(t_new)
-    return t, v
+        y[i + 1] = fsolve(F, y_guess)
 
-
-n_newton_iterations = 20
-# solving with various timesteps
-t1, v1 = impl_euler(0, 0, 0.3, f1, f1_der, n_newton_iterations)
-t2, v2 = impl_euler(0, 0, 0.3, f2, f2_der, n_newton_iterations)
-t3, v3 = impl_euler(0, 0, 0.3, f3, f3_der, n_newton_iterations)
-t4, v4 = impl_euler(0, 0, 0.3, f4, f4_der, n_newton_iterations)
-
-# plot the solution
-#
+    return t, y
