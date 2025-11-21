@@ -1,0 +1,109 @@
+10:23:26 - INFO - Logging to file: logs/solver_timing_20251121_102326.log
+10:23:26 - INFO - 
+============================================================
+10:23:26 - INFO - FURUTA PENDULUM - TIMESTEP COMPARISON STUDY
+10:23:26 - INFO - ============================================================
+10:23:26 - INFO - Parameters: {'m_alpha': 0.1, 'm_theta': 0.2, 'L': 0.095, 'r': 0.095, 'g': 9.81, 'tau': 0.0}
+10:23:26 - INFO - Initial conditions: θ=0, θ̇=0, α=1.5708, α̇=0
+10:23:26 - INFO - Time span: (0, 10)
+10:23:26 - INFO - Timesteps to compare: [0.1, 0.01, 0.0001, 1e-05]
+10:23:26 - INFO - ============================================================
+10:23:26 - INFO - 
+============================================================
+10:23:26 - INFO - Running comparison for timestep h = 0.1
+10:23:26 - INFO - Time span: (0, 10), Steps: 100
+10:23:26 - INFO - ============================================================
+10:23:26 - INFO - RK45 (scipy) completed in 0.037010 seconds
+10:23:26 - INFO - Euler Forward completed in 0.002228 seconds
+10:23:26 - INFO - Euler Backward completed in 0.018847 seconds
+10:23:26 - INFO - RK4 completed in 0.008116 seconds
+10:23:26 - INFO - ------------------------------------------------------------
+10:23:26 - INFO - Timing Summary:
+10:23:26 - INFO -   RK45 (scipy):    0.037010 seconds
+10:23:26 - INFO -   Euler Forward:   0.002228 seconds
+10:23:26 - INFO -   Euler Backward:  0.018847 seconds
+10:23:26 - INFO -   RK4:             0.008116 seconds
+10:23:26 - INFO - Plot saved to: plots/comparison_h_0_1000.png
+10:23:27 - INFO - Plot saved to: plots/comparison_h_0_1000_no_euler_fwd.png
+10:23:27 - INFO - 
+============================================================
+10:23:27 - INFO - Running comparison for timestep h = 0.01
+10:23:27 - INFO - Time span: (0, 10), Steps: 1000
+10:23:27 - INFO - ============================================================
+10:23:27 - INFO - RK45 (scipy) completed in 0.039293 seconds
+10:23:27 - INFO - Euler Forward completed in 0.019454 seconds
+10:23:27 - INFO - Euler Backward completed in 0.201983 seconds
+10:23:27 - INFO - RK4 completed in 0.078989 seconds
+10:23:27 - INFO - ------------------------------------------------------------
+10:23:27 - INFO - Timing Summary:
+10:23:27 - INFO -   RK45 (scipy):    0.039293 seconds
+10:23:27 - INFO -   Euler Forward:   0.019454 seconds
+10:23:27 - INFO -   Euler Backward:  0.201983 seconds
+10:23:27 - INFO -   RK4:             0.078989 seconds
+10:23:28 - INFO - Plot saved to: plots/comparison_h_0_0100.png
+10:23:29 - INFO - Plot saved to: plots/comparison_h_0_0100_no_euler_fwd.png
+10:23:29 - INFO - 
+============================================================
+10:23:29 - INFO - Running comparison for timestep h = 0.0001
+10:23:29 - INFO - Time span: (0, 10), Steps: 100000
+10:23:29 - INFO - ============================================================
+10:23:29 - INFO - RK45 (scipy) completed in 0.039390 seconds
+10:23:31 - INFO - Euler Forward completed in 2.026874 seconds
+10:23:49 - INFO - Euler Backward completed in 18.382219 seconds
+10:23:57 - INFO - RK4 completed in 8.005223 seconds
+10:23:57 - INFO - ------------------------------------------------------------
+10:23:57 - INFO - Timing Summary:
+10:23:57 - INFO -   RK45 (scipy):    0.039390 seconds
+10:23:57 - INFO -   Euler Forward:   2.026874 seconds
+10:23:57 - INFO -   Euler Backward:  18.382219 seconds
+10:23:57 - INFO -   RK4:             8.005223 seconds
+10:24:00 - INFO - Plot saved to: plots/comparison_h_0_0001.png
+10:24:00 - INFO - 
+============================================================
+10:24:00 - INFO - Running comparison for timestep h = 1e-05
+10:24:00 - INFO - Time span: (0, 10), Steps: 1000000
+10:24:00 - INFO - ============================================================
+10:24:00 - INFO - RK45 (scipy) completed in 0.058056 seconds
+10:24:19 - INFO - Euler Forward completed in 18.936306 seconds
+10:27:18 - INFO - Euler Backward completed in 178.700082 seconds
+10:28:41 - INFO - RK4 completed in 83.150940 seconds
+10:28:41 - INFO - ------------------------------------------------------------
+10:28:41 - INFO - Timing Summary:
+10:28:41 - INFO -   RK45 (scipy):    0.058056 seconds
+10:28:41 - INFO -   Euler Forward:   18.936306 seconds
+10:28:41 - INFO -   Euler Backward:  178.700082 seconds
+10:28:41 - INFO -   RK4:             83.150940 seconds
+10:28:59 - INFO - Plot saved to: plots/comparison_h_0_0000.png
+10:28:59 - INFO - 
+============================================================
+10:28:59 - INFO - FINAL SUMMARY - ALL TIMESTEPS
+10:28:59 - INFO - ============================================================
+10:28:59 - INFO - 
+Timestep h = 0.1:
+10:28:59 - INFO -   RK45 (scipy):    0.037010 seconds
+10:28:59 - INFO -   Euler Forward:   0.002228 seconds
+10:28:59 - INFO -   Euler Backward:  0.018847 seconds
+10:28:59 - INFO -   RK4:             0.008116 seconds
+10:28:59 - INFO - 
+Timestep h = 0.01:
+10:28:59 - INFO -   RK45 (scipy):    0.039293 seconds
+10:28:59 - INFO -   Euler Forward:   0.019454 seconds
+10:28:59 - INFO -   Euler Backward:  0.201983 seconds
+10:28:59 - INFO -   RK4:             0.078989 seconds
+10:28:59 - INFO - 
+Timestep h = 0.0001:
+10:28:59 - INFO -   RK45 (scipy):    0.039390 seconds
+10:28:59 - INFO -   Euler Forward:   2.026874 seconds
+10:28:59 - INFO -   Euler Backward:  18.382219 seconds
+10:28:59 - INFO -   RK4:             8.005223 seconds
+10:28:59 - INFO - 
+Timestep h = 1e-05:
+10:28:59 - INFO -   RK45 (scipy):    0.058056 seconds
+10:28:59 - INFO -   Euler Forward:   18.936306 seconds
+10:28:59 - INFO -   Euler Backward:  178.700082 seconds
+10:28:59 - INFO -   RK4:             83.150940 seconds
+10:28:59 - INFO - ============================================================
+10:28:59 - INFO - Timing results saved to: logs/solver_timing_20251121_102859.csv
+10:28:59 - INFO - 
+All plots have been saved to the 'plots' directory
+10:28:59 - INFO - ============================================================

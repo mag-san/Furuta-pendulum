@@ -1,0 +1,11 @@
+# Furuta Pendulum Solver Timing Results
+# Generated:,2025-11-21 10:28:59
+# Time span:,0 to 10 seconds
+# Initial conditions:,"θ=0, θ̇=0, α=1.5708, α̇=0"
+# Parameters:,"{'m_alpha': 0.1, 'm_theta': 0.2, 'L': 0.095, 'r': 0.095, 'g': 9.81, 'tau': 0.0}"
+
+timestep_h,num_steps,rk45_time_sec,euler_fwd_time_sec,euler_bwd_time_sec,rk4_time_sec
+1e-05,1000000,0.058056,18.936306,178.700082,83.150940
+0.0001,100000,0.039390,2.026874,18.382219,8.005223
+0.01,1000,0.039293,0.019454,0.201983,0.078989
+0.1,100,0.037010,0.002228,0.018847,0.008116

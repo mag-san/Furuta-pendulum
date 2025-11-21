@@ -1,4 +1,5 @@
 import argparse
+import math
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +10,7 @@ from scipy.integrate import solve_ivp
 
 from euler_backward import euler_backward
 from euler_forward import euler_forward
+from runge_kutta_4 import runge_kutta_4
 from system_ode import furuta_pendulum
 
 """
@@ -108,7 +110,9 @@ class FurutaPendulumAnimation:
         self.ax.set_xlabel("X [m]")
         self.ax.set_ylabel("Y [m]")
         self.ax.set_zlabel("Z [m]")
-        self.title = self.ax.set_title(f"Furuta Pendulum Animation - {self.current_solver}")
+        self.title = self.ax.set_title(
+            f"Furuta Pendulum Animation - {self.current_solver}"
+        )
 
         # Initialize plot elements
         (self.arm_line,) = self.ax.plot([], [], [], "b-", linewidth=3, label="Arm")
@@ -126,7 +130,6 @@ class FurutaPendulumAnimation:
         # Setup time series plots
         self.ax_theta = self.fig.add_subplot(322)
         self.ax_alpha = self.fig.add_subplot(324)
-        self.ax_energy = self.fig.add_subplot(326)
 
         # Plot full time series as background
         self.ax_theta.plot(self.t, self.theta, "b-", alpha=0.3)
@@ -143,15 +146,6 @@ class FurutaPendulumAnimation:
         (self.theta_marker,) = self.ax_theta.plot([], [], "bo", markersize=8)
         (self.alpha_marker,) = self.ax_alpha.plot([], [], "ro", markersize=8)
 
-        # Energy plot (kinetic + potential)
-        self.energy = self._compute_energy()
-        self.ax_energy.plot(self.t, self.energy, "g-", alpha=0.3)
-        self.ax_energy.set_xlabel("Time [s]")
-        self.ax_energy.set_ylabel("Energy [J]")
-        self.ax_energy.set_title("Total Energy")
-        self.ax_energy.grid(True)
-        (self.energy_marker,) = self.ax_energy.plot([], [], "go", markersize=8)
-
         # Time text
         self.time_text = self.ax.text2D(0.05, 0.95, "", transform=self.ax.transAxes)
 
@@ -166,19 +160,30 @@ class FurutaPendulumAnimation:
         button_y = 0.02
 
         # RK45 button
-        ax_rk45 = plt.axes([0.15, button_y, button_width, button_height])
+        ax_rk45 = plt.axes([0.10, button_y, button_width, button_height])
         self.btn_rk45 = Button(ax_rk45, "RK45", color="lightgreen", hovercolor="green")
         self.btn_rk45.on_clicked(lambda event: self.switch_solver("RK45"))
 
+        # RK4 button
+        ax_rk4 = plt.axes([0.24, button_y, button_width, button_height])
+        self.btn_rk4 = Button(ax_rk4, "RK4", color="lightyellow", hovercolor="yellow")
+        self.btn_rk4.on_clicked(lambda event: self.switch_solver("RK4"))
+
         # Euler Forward button
-        ax_euler_fwd = plt.axes([0.30, button_y, button_width, button_height])
-        self.btn_euler_fwd = Button(ax_euler_fwd, "Euler Forward", color="lightblue", hovercolor="blue")
+        ax_euler_fwd = plt.axes([0.38, button_y, button_width, button_height])
+        self.btn_euler_fwd = Button(
+            ax_euler_fwd, "Euler Forward", color="lightblue", hovercolor="blue"
+        )
         self.btn_euler_fwd.on_clicked(lambda event: self.switch_solver("EULER FORWARD"))
 
         # Euler Backward button
-        ax_euler_bwd = plt.axes([0.45, button_y, button_width, button_height])
-        self.btn_euler_bwd = Button(ax_euler_bwd, "Euler Backward", color="lightcoral", hovercolor="red")
-        self.btn_euler_bwd.on_clicked(lambda event: self.switch_solver("EULER BACKWARD"))
+        ax_euler_bwd = plt.axes([0.52, button_y, button_width, button_height])
+        self.btn_euler_bwd = Button(
+            ax_euler_bwd, "Euler Backward", color="lightcoral", hovercolor="red"
+        )
+        self.btn_euler_bwd.on_clicked(
+            lambda event: self.switch_solver("EULER BACKWARD")
+        )
 
         # Animation control
         self.paused = False
@@ -195,9 +200,6 @@ class FurutaPendulumAnimation:
             self.theta = self.sol.y[0]
             self.alpha = self.sol.y[2]
 
-            # Recompute energy for new solution
-            self.energy = self._compute_energy()
-
             # Update title
             self.title.set_text(f"Furuta Pendulum Animation - {self.current_solver}")
 
@@ -209,15 +211,12 @@ class FurutaPendulumAnimation:
             # Update time series plots
             self.ax_theta.lines[0].set_data(self.t, self.theta)
             self.ax_alpha.lines[0].set_data(self.t, self.alpha)
-            self.ax_energy.lines[0].set_data(self.t, self.energy)
 
             # Reset autoscale for plots
             self.ax_theta.relim()
             self.ax_theta.autoscale_view()
             self.ax_alpha.relim()
             self.ax_alpha.autoscale_view()
-            self.ax_energy.relim()
-            self.ax_energy.autoscale_view()
 
             # Force redraw of the figure
             self.fig.canvas.draw_idle()
@@ -226,26 +225,6 @@ class FurutaPendulumAnimation:
             self.current_frame = 0
 
             print(f"Switched to {solver_name}")
-
-    def _compute_energy(self):
-        """Compute total mechanical energy at each time step."""
-        m_alpha = self.params["m_alpha"]
-        m_theta = self.params["m_theta"]
-        g = self.params["g"]
-
-        theta_dot = self.sol.y[1]
-        alpha_dot = self.sol.y[3]
-
-        # Simplified energy calculation (approximate)
-        # Kinetic energy: rotational + pendulum
-        KE = 0.5 * m_theta * (self.r * theta_dot) ** 2
-        KE += 0.5 * m_alpha * (self.r * theta_dot) ** 2
-        KE += 0.5 * m_alpha * (self.L * alpha_dot) ** 2
-
-        # Potential energy
-        PE = -m_alpha * g * self.L * np.cos(self.alpha)
-
-        return KE + PE
 
     def init(self):
         """Initialize animation."""
@@ -261,7 +240,6 @@ class FurutaPendulumAnimation:
         self.trail_line.set_3d_properties([])
         self.theta_marker.set_data([], [])
         self.alpha_marker.set_data([], [])
-        self.energy_marker.set_data([], [])
         self.time_text.set_text("")
 
         return (
@@ -272,7 +250,6 @@ class FurutaPendulumAnimation:
             self.trail_line,
             self.theta_marker,
             self.alpha_marker,
-            self.energy_marker,
             self.time_text,
         )
 
@@ -318,7 +295,6 @@ class FurutaPendulumAnimation:
         # Update time series markers
         self.theta_marker.set_data([self.t[frame]], [theta])
         self.alpha_marker.set_data([self.t[frame]], [alpha])
-        self.energy_marker.set_data([self.t[frame]], [self.energy[frame]])
 
         # Update time text
         self.time_text.set_text(f"Time: {self.t[frame]:.2f} s")
@@ -331,7 +307,6 @@ class FurutaPendulumAnimation:
             self.trail_line,
             self.theta_marker,
             self.alpha_marker,
-            self.energy_marker,
             self.time_text,
         )
 
@@ -378,24 +353,23 @@ def main():
     )
     args = parser.parse_args()
 
-    # Pendulum parameters
+    # Pendulum parameters (from main.py)
     params = {
-        "m_alpha": 0.50,  # pendulum mass [kg]
-        "m_theta": 0.1,  # arm mass [kg]
+        "m_alpha": 0.1,  # pendulum mass [kg]
+        "m_theta": 0.2,  # arm mass [kg]
         "L": 0.095,  # pendulum length [m]
         "r": 0.095,  # arm length [m]
         "g": 9.81,  # gravity [m/s²]
         "tau": 0.0,  # input torque [N·m]
     }
 
-    # Initial conditions: [theta, theta_dot, alpha, alpha_dot]
-    # Starting with pendulum slightly off from inverted position
-    x0 = [0.0, 0, 2, 0]
+    # Initial conditions: [theta, theta_dot, alpha, alpha_dot] (from main.py)
+    x0 = [0, 0, math.pi / 2, 0]
 
     # Time span
     t_span = (0, 10)
 
-    print("Computing solutions with all three solvers...")
+    print("Computing solutions with all four solvers...")
     print("This may take a moment...")
 
     # Solve using RK45
@@ -435,9 +409,23 @@ def main():
     indices_eb = np.clip(indices_eb, 0, len(t_eb) - 1)
     sol_euler_bwd = SolutionWrapper(t_eval, y_eb[indices_eb])
 
+    # Solve using RK4
+    print("  - Solving with RK4...")
+    t_rk4, y_rk4 = runge_kutta_4(
+        f=lambda t, x: furuta_pendulum(t, x, params),
+        t_span=t_span,
+        y0=x0,
+        h=args.step_size,
+    )
+    # Downsample to match RK45 time points for consistent animation
+    indices_rk4 = np.searchsorted(t_rk4, t_eval)
+    indices_rk4 = np.clip(indices_rk4, 0, len(t_rk4) - 1)
+    sol_rk4 = SolutionWrapper(t_eval, y_rk4[indices_rk4])
+
     # Create solutions dictionary
     solutions = {
         "RK45": sol_rk45,
+        "RK4": sol_rk4,
         "EULER FORWARD": sol_euler_fwd,
         "EULER BACKWARD": sol_euler_bwd,
     }
