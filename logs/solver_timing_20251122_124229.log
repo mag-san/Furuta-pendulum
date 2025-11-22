@@ -1,0 +1,206 @@
+12:42:29 - INFO - Logging to file: logs/solver_timing_20251122_124229.log
+12:42:29 - INFO - 
+============================================================
+12:42:29 - INFO - FURUTA PENDULUM - TIMESTEP COMPARISON STUDY
+12:42:29 - INFO - ============================================================
+12:42:29 - INFO - Parameters: {'m_alpha': 0.1, 'm_theta': 0.2, 'L': 0.095, 'r': 0.095, 'g': 9.81, 'tau': 0.0}
+12:42:29 - INFO - Initial conditions: θ=0, θ̇=0, α=1.5708, α̇=0
+12:42:29 - INFO - Time span: (0, 10)
+12:42:29 - INFO - Timesteps to compare: [0.1, 0.01, 0.0001, 1e-05]
+12:42:29 - INFO - ============================================================
+12:42:29 - INFO - 
+============================================================
+12:42:29 - INFO - Running comparison for timestep h = 0.1
+12:42:29 - INFO - Time span: (0, 10), Steps: 100
+12:42:29 - INFO - ============================================================
+12:42:29 - INFO - RK45 (scipy) completed in 0.036414 seconds
+12:42:29 - INFO - Euler Forward completed in 0.002377 seconds
+12:42:29 - INFO - Euler Backward completed in 0.019243 seconds
+12:42:29 - INFO - RK4 completed in 0.008176 seconds
+12:42:29 - INFO - ------------------------------------------------------------
+12:42:29 - INFO - Timing Summary:
+12:42:29 - INFO -   RK45 (scipy):    0.036414 seconds
+12:42:29 - INFO -   Euler Forward:   0.002377 seconds
+12:42:29 - INFO -   Euler Backward:  0.019243 seconds
+12:42:29 - INFO -   RK4:             0.008176 seconds
+12:42:29 - INFO - ------------------------------------------------------------
+12:42:29 - INFO - Energy Conservation Analysis:
+12:42:29 - INFO -   RK45 (scipy):
+12:42:29 - INFO -     Max drift:   3.761455%
+12:42:29 - INFO -     Final drift: -3.719674%
+12:42:29 - INFO -     Drift rate:  -0.375725%/s
+12:42:29 - INFO -   Euler Forward:
+12:42:29 - INFO -     Max drift:   nan%
+12:42:29 - INFO -     Final drift: nan%
+12:42:29 - INFO -     Drift rate:  nan%/s
+12:42:29 - INFO -   Euler Backward:
+12:42:29 - INFO -     Max drift:   94.707887%
+12:42:29 - INFO -     Final drift: -94.707887%
+12:42:29 - INFO -     Drift rate:  -9.470789%/s
+12:42:29 - INFO -   RK4:
+12:42:29 - INFO -     Max drift:   94.061098%
+12:42:29 - INFO -     Final drift: -94.061098%
+12:42:29 - INFO -     Drift rate:  -9.406110%/s
+12:42:29 - INFO - Plot saved to: plots/comparison_h_0_1000.png
+12:42:30 - INFO - Plot saved to: plots/comparison_h_0_1000_no_euler_fwd.png
+12:42:30 - INFO - 
+============================================================
+12:42:30 - INFO - Running comparison for timestep h = 0.01
+12:42:30 - INFO - Time span: (0, 10), Steps: 1000
+12:42:30 - INFO - ============================================================
+12:42:30 - INFO - RK45 (scipy) completed in 0.037874 seconds
+12:42:30 - INFO - Euler Forward completed in 0.019660 seconds
+12:42:30 - INFO - Euler Backward completed in 0.191600 seconds
+12:42:30 - INFO - RK4 completed in 0.078808 seconds
+12:42:30 - INFO - ------------------------------------------------------------
+12:42:30 - INFO - Timing Summary:
+12:42:30 - INFO -   RK45 (scipy):    0.037874 seconds
+12:42:30 - INFO -   Euler Forward:   0.019660 seconds
+12:42:30 - INFO -   Euler Backward:  0.191600 seconds
+12:42:30 - INFO -   RK4:             0.078808 seconds
+12:42:30 - INFO - ------------------------------------------------------------
+12:42:30 - INFO - Energy Conservation Analysis:
+12:42:30 - INFO -   RK45 (scipy):
+12:42:30 - INFO -     Max drift:   3.919911%
+12:42:30 - INFO -     Final drift: -3.535736%
+12:42:30 - INFO -     Drift rate:  -0.353928%/s
+12:42:30 - INFO -   Euler Forward:
+12:42:30 - INFO -     Max drift:   985.544132%
+12:42:30 - INFO -     Final drift: 795.118341%
+12:42:30 - INFO -     Drift rate:  79.511834%/s
+12:42:30 - INFO -   Euler Backward:
+12:42:30 - INFO -     Max drift:   99.995936%
+12:42:30 - INFO -     Final drift: -99.995936%
+12:42:30 - INFO -     Drift rate:  -9.999594%/s
+12:42:30 - INFO -   RK4:
+12:42:30 - INFO -     Max drift:   0.177755%
+12:42:30 - INFO -     Final drift: -0.177755%
+12:42:30 - INFO -     Drift rate:  -0.017776%/s
+12:42:31 - INFO - Plot saved to: plots/comparison_h_0_0100.png
+12:42:32 - INFO - Plot saved to: plots/comparison_h_0_0100_no_euler_fwd.png
+12:42:32 - INFO - 
+============================================================
+12:42:32 - INFO - Running comparison for timestep h = 0.0001
+12:42:32 - INFO - Time span: (0, 10), Steps: 100000
+12:42:32 - INFO - ============================================================
+12:42:32 - INFO - RK45 (scipy) completed in 0.039306 seconds
+12:42:34 - INFO - Euler Forward completed in 1.871208 seconds
+12:42:52 - INFO - Euler Backward completed in 17.759934 seconds
+12:42:59 - INFO - RK4 completed in 7.754255 seconds
+12:42:59 - INFO - ------------------------------------------------------------
+12:42:59 - INFO - Timing Summary:
+12:42:59 - INFO -   RK45 (scipy):    0.039306 seconds
+12:42:59 - INFO -   Euler Forward:   1.871208 seconds
+12:42:59 - INFO -   Euler Backward:  17.759934 seconds
+12:42:59 - INFO -   RK4:             7.754255 seconds
+12:42:59 - INFO - ------------------------------------------------------------
+12:42:59 - INFO - Energy Conservation Analysis:
+12:43:00 - INFO -   RK45 (scipy):
+12:43:00 - INFO -     Max drift:   3.974714%
+12:43:00 - INFO -     Final drift: -3.526014%
+12:43:00 - INFO -     Drift rate:  -0.352605%/s
+12:43:00 - INFO -   Euler Forward:
+12:43:00 - INFO -     Max drift:   14.027434%
+12:43:00 - INFO -     Final drift: 14.027434%
+12:43:00 - INFO -     Drift rate:  1.402743%/s
+12:43:00 - INFO -   Euler Backward:
+12:43:00 - INFO -     Max drift:   13.259673%
+12:43:00 - INFO -     Final drift: -13.259673%
+12:43:00 - INFO -     Drift rate:  -1.325967%/s
+12:43:00 - INFO -   RK4:
+12:43:00 - INFO -     Max drift:   0.000000%
+12:43:00 - INFO -     Final drift: -0.000000%
+12:43:00 - INFO -     Drift rate:  -0.000000%/s
+12:43:03 - INFO - Plot saved to: plots/comparison_h_0_0001.png
+12:43:03 - INFO - 
+============================================================
+12:43:03 - INFO - Running comparison for timestep h = 1e-05
+12:43:03 - INFO - Time span: (0, 10), Steps: 1000000
+12:43:03 - INFO - ============================================================
+12:43:03 - INFO - RK45 (scipy) completed in 0.056160 seconds
+12:43:22 - INFO - Euler Forward completed in 18.745784 seconds
+12:46:21 - INFO - Euler Backward completed in 179.273516 seconds
+12:47:40 - INFO - RK4 completed in 78.906211 seconds
+12:47:40 - INFO - ------------------------------------------------------------
+12:47:40 - INFO - Timing Summary:
+12:47:40 - INFO -   RK45 (scipy):    0.056160 seconds
+12:47:40 - INFO -   Euler Forward:   18.745784 seconds
+12:47:40 - INFO -   Euler Backward:  179.273516 seconds
+12:47:40 - INFO -   RK4:             78.906211 seconds
+12:47:40 - INFO - ------------------------------------------------------------
+12:47:40 - INFO - Energy Conservation Analysis:
+12:47:42 - INFO -   RK45 (scipy):
+12:47:42 - INFO -     Max drift:   3.974715%
+12:47:42 - INFO -     Final drift: -3.526039%
+12:47:42 - INFO -     Drift rate:  -0.352604%/s
+12:47:45 - INFO -   Euler Forward:
+12:47:45 - INFO -     Max drift:   1.362045%
+12:47:45 - INFO -     Final drift: 1.362045%
+12:47:45 - INFO -     Drift rate:  0.136204%/s
+12:47:48 - INFO -   Euler Backward:
+12:47:48 - INFO -     Max drift:   1.358849%
+12:47:48 - INFO -     Final drift: -1.358849%
+12:47:48 - INFO -     Drift rate:  -0.135885%/s
+12:47:50 - INFO -   RK4:
+12:47:50 - INFO -     Max drift:   0.000000%
+12:47:50 - INFO -     Final drift: -0.000000%
+12:47:50 - INFO -     Drift rate:  -0.000000%/s
+12:48:09 - INFO - Plot saved to: plots/comparison_h_0_0000.png
+12:48:23 - INFO - Energy comparison plot saved to: plots/energy_comparison_all_timesteps.png
+12:48:23 - INFO - 
+============================================================
+12:48:23 - INFO - FINAL SUMMARY - ALL TIMESTEPS
+12:48:23 - INFO - ============================================================
+12:48:23 - INFO - 
+Timestep h = 0.1:
+12:48:23 - INFO -   Timing:
+12:48:23 - INFO -     RK45 (scipy):    0.036414 seconds
+12:48:23 - INFO -     Euler Forward:   0.002377 seconds
+12:48:23 - INFO -     Euler Backward:  0.019243 seconds
+12:48:23 - INFO -     RK4:             0.008176 seconds
+12:48:23 - INFO -   Energy Conservation (max drift %):
+12:48:23 - INFO -     RK45 (scipy):    3.761455%
+12:48:23 - INFO -     Euler Forward:   nan%
+12:48:23 - INFO -     Euler Backward:  94.707887%
+12:48:23 - INFO -     RK4:             94.061098%
+12:48:23 - INFO - 
+Timestep h = 0.01:
+12:48:23 - INFO -   Timing:
+12:48:23 - INFO -     RK45 (scipy):    0.037874 seconds
+12:48:23 - INFO -     Euler Forward:   0.019660 seconds
+12:48:23 - INFO -     Euler Backward:  0.191600 seconds
+12:48:23 - INFO -     RK4:             0.078808 seconds
+12:48:23 - INFO -   Energy Conservation (max drift %):
+12:48:23 - INFO -     RK45 (scipy):    3.919911%
+12:48:23 - INFO -     Euler Forward:   985.544132%
+12:48:23 - INFO -     Euler Backward:  99.995936%
+12:48:23 - INFO -     RK4:             0.177755%
+12:48:23 - INFO - 
+Timestep h = 0.0001:
+12:48:23 - INFO -   Timing:
+12:48:23 - INFO -     RK45 (scipy):    0.039306 seconds
+12:48:23 - INFO -     Euler Forward:   1.871208 seconds
+12:48:23 - INFO -     Euler Backward:  17.759934 seconds
+12:48:23 - INFO -     RK4:             7.754255 seconds
+12:48:23 - INFO -   Energy Conservation (max drift %):
+12:48:23 - INFO -     RK45 (scipy):    3.974714%
+12:48:23 - INFO -     Euler Forward:   14.027434%
+12:48:23 - INFO -     Euler Backward:  13.259673%
+12:48:23 - INFO -     RK4:             0.000000%
+12:48:23 - INFO - 
+Timestep h = 1e-05:
+12:48:23 - INFO -   Timing:
+12:48:23 - INFO -     RK45 (scipy):    0.056160 seconds
+12:48:23 - INFO -     Euler Forward:   18.745784 seconds
+12:48:23 - INFO -     Euler Backward:  179.273516 seconds
+12:48:23 - INFO -     RK4:             78.906211 seconds
+12:48:23 - INFO -   Energy Conservation (max drift %):
+12:48:23 - INFO -     RK45 (scipy):    3.974715%
+12:48:23 - INFO -     Euler Forward:   1.362045%
+12:48:23 - INFO -     Euler Backward:  1.358849%
+12:48:23 - INFO -     RK4:             0.000000%
+12:48:23 - INFO - ============================================================
+12:48:23 - INFO - Timing results saved to: logs/solver_timing_20251122_124823.csv
+12:48:23 - INFO - 
+All plots have been saved to the 'plots' directory
+12:48:23 - INFO - ============================================================

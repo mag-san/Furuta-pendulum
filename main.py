@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
 
+from energy_conservation import analyze_energy_conservation
 from euler_backward import euler_backward
 from euler_forward import euler_forward
 from runge_kutta_4 import runge_kutta_4
@@ -84,6 +85,34 @@ def run_timestep_comparison(h, params, x0, t_span):
     logger.info(f"  Euler Backward:  {euler_bwd_time:.6f} seconds")
     logger.info(f"  RK4:             {rk4_time:.6f} seconds")
 
+    # Calculate energy conservation for each method
+    logger.info("-" * 60)
+    logger.info("Energy Conservation Analysis:")
+
+    energy_rk45 = analyze_energy_conservation(sol.t, sol.y.T, params)
+    logger.info(f"  RK45 (scipy):")
+    logger.info(f"    Max drift:   {energy_rk45['max_drift']:.6f}%")
+    logger.info(f"    Final drift: {energy_rk45['final_drift']:.6f}%")
+    logger.info(f"    Drift rate:  {energy_rk45['drift_rate']:.6f}%/s")
+
+    energy_euler_fwd = analyze_energy_conservation(t_euler_fwd, y_euler_fwd, params)
+    logger.info(f"  Euler Forward:")
+    logger.info(f"    Max drift:   {energy_euler_fwd['max_drift']:.6f}%")
+    logger.info(f"    Final drift: {energy_euler_fwd['final_drift']:.6f}%")
+    logger.info(f"    Drift rate:  {energy_euler_fwd['drift_rate']:.6f}%/s")
+
+    energy_euler_bwd = analyze_energy_conservation(t_euler_bwd, y_euler_bwd, params)
+    logger.info(f"  Euler Backward:")
+    logger.info(f"    Max drift:   {energy_euler_bwd['max_drift']:.6f}%")
+    logger.info(f"    Final drift: {energy_euler_bwd['final_drift']:.6f}%")
+    logger.info(f"    Drift rate:  {energy_euler_bwd['drift_rate']:.6f}%/s")
+
+    energy_rk4 = analyze_energy_conservation(t_rk4, y_rk4, params)
+    logger.info(f"  RK4:")
+    logger.info(f"    Max drift:   {energy_rk4['max_drift']:.6f}%")
+    logger.info(f"    Final drift: {energy_rk4['final_drift']:.6f}%")
+    logger.info(f"    Drift rate:  {energy_rk4['drift_rate']:.6f}%/s")
+
     return {
         "sol": sol,
         "t_euler_fwd": t_euler_fwd,
@@ -97,6 +126,12 @@ def run_timestep_comparison(h, params, x0, t_span):
             "euler_fwd": euler_fwd_time,
             "euler_bwd": euler_bwd_time,
             "rk4": rk4_time,
+        },
+        "energy": {
+            "rk45": energy_rk45,
+            "euler_fwd": energy_euler_fwd,
+            "euler_bwd": energy_euler_bwd,
+            "rk4": energy_rk4,
         },
     }
 
@@ -196,6 +231,80 @@ def plot_comparison(results, h, save_dir="plots", exclude_euler_fwd=False):
     plt.close(fig)
 
 
+def plot_energy_comparison(all_results, timesteps, params, save_dir="plots"):
+    """Create and save energy consumption comparison plot across all timesteps."""
+    os.makedirs(save_dir, exist_ok=True)
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle(
+        "Energy Conservation Comparison Across Timesteps",
+        fontsize=16,
+        fontweight="bold",
+    )
+
+    for idx, h in enumerate(timesteps):
+        ax = axes[idx // 2, idx % 2]
+        results = all_results[h]
+
+        # Calculate energy for each method
+        energy_rk45 = analyze_energy_conservation(
+            results["sol"].t, results["sol"].y.T, params
+        )
+        energy_euler_fwd = analyze_energy_conservation(
+            results["t_euler_fwd"], results["y_euler_fwd"], params
+        )
+        energy_euler_bwd = analyze_energy_conservation(
+            results["t_euler_bwd"], results["y_euler_bwd"], params
+        )
+        energy_rk4 = analyze_energy_conservation(
+            results["t_rk4"], results["y_rk4"], params
+        )
+
+        # Plot energy values over time
+        ax.plot(
+            results["sol"].t,
+            energy_rk45["energies"],
+            label="RK45",
+            linewidth=2,
+            alpha=0.8,
+        )
+        ax.plot(
+            results["t_rk4"], energy_rk4["energies"], label="RK4", linewidth=2, alpha=0.8
+        )
+        ax.plot(
+            results["t_euler_bwd"],
+            energy_euler_bwd["energies"],
+            ":",
+            label="Euler Backward",
+            linewidth=2,
+            alpha=0.7,
+        )
+        ax.plot(
+            results["t_euler_fwd"],
+            energy_euler_fwd["energies"],
+            "--",
+            label="Euler Forward",
+            linewidth=2,
+            alpha=0.7,
+        )
+
+        ax.set_xlabel("Time [s]")
+        ax.set_ylabel("Total Energy [J]")
+        ax.set_title(f"h = {h}")
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+
+    # Save the figure
+    filename = "energy_comparison_all_timesteps.png"
+    filepath = os.path.join(save_dir, filename)
+    plt.savefig(filepath, dpi=300, bbox_inches="tight")
+    logger.info(f"Energy comparison plot saved to: {filepath}")
+
+    plt.close(fig)
+
+
 def save_timing_results(all_results, params, x0, t_span, save_dir="logs"):
     """Save timing results to CSV file for analysis."""
     os.makedirs(save_dir, exist_ok=True)
@@ -229,6 +338,14 @@ def save_timing_results(all_results, params, x0, t_span, save_dir="logs"):
                 "euler_fwd_time_sec",
                 "euler_bwd_time_sec",
                 "rk4_time_sec",
+                "rk45_max_drift_%",
+                "rk45_final_drift_%",
+                "euler_fwd_max_drift_%",
+                "euler_fwd_final_drift_%",
+                "euler_bwd_max_drift_%",
+                "euler_bwd_final_drift_%",
+                "rk4_max_drift_%",
+                "rk4_final_drift_%",
             ]
         )
 
@@ -236,6 +353,7 @@ def save_timing_results(all_results, params, x0, t_span, save_dir="logs"):
         for h, results in sorted(all_results.items()):
             num_steps = len(results["sol"].t)
             times = results["times"]
+            energy = results["energy"]
             writer.writerow(
                 [
                     h,
@@ -244,6 +362,14 @@ def save_timing_results(all_results, params, x0, t_span, save_dir="logs"):
                     f"{times['euler_fwd']:.6f}",
                     f"{times['euler_bwd']:.6f}",
                     f"{times['rk4']:.6f}",
+                    f"{energy['rk45']['max_drift']:.6f}",
+                    f"{energy['rk45']['final_drift']:.6f}",
+                    f"{energy['euler_fwd']['max_drift']:.6f}",
+                    f"{energy['euler_fwd']['final_drift']:.6f}",
+                    f"{energy['euler_bwd']['max_drift']:.6f}",
+                    f"{energy['euler_bwd']['final_drift']:.6f}",
+                    f"{energy['rk4']['max_drift']:.6f}",
+                    f"{energy['rk4']['final_drift']:.6f}",
                 ]
             )
 
@@ -287,6 +413,9 @@ def main():
         if h == 0.1 or h == 0.01:
             plot_comparison(results, h, exclude_euler_fwd=True)
 
+    # Create energy comparison plot across all timesteps
+    plot_energy_comparison(all_results, timesteps, params)
+
     # Final summary
     logger.info("\n" + "=" * 60)
     logger.info("FINAL SUMMARY - ALL TIMESTEPS")
@@ -294,10 +423,17 @@ def main():
     for h in timesteps:
         logger.info(f"\nTimestep h = {h}:")
         times = all_results[h]["times"]
-        logger.info(f"  RK45 (scipy):    {times['rk45']:.6f} seconds")
-        logger.info(f"  Euler Forward:   {times['euler_fwd']:.6f} seconds")
-        logger.info(f"  Euler Backward:  {times['euler_bwd']:.6f} seconds")
-        logger.info(f"  RK4:             {times['rk4']:.6f} seconds")
+        energy = all_results[h]["energy"]
+        logger.info(f"  Timing:")
+        logger.info(f"    RK45 (scipy):    {times['rk45']:.6f} seconds")
+        logger.info(f"    Euler Forward:   {times['euler_fwd']:.6f} seconds")
+        logger.info(f"    Euler Backward:  {times['euler_bwd']:.6f} seconds")
+        logger.info(f"    RK4:             {times['rk4']:.6f} seconds")
+        logger.info(f"  Energy Conservation (max drift %):")
+        logger.info(f"    RK45 (scipy):    {energy['rk45']['max_drift']:.6f}%")
+        logger.info(f"    Euler Forward:   {energy['euler_fwd']['max_drift']:.6f}%")
+        logger.info(f"    Euler Backward:  {energy['euler_bwd']['max_drift']:.6f}%")
+        logger.info(f"    RK4:             {energy['rk4']['max_drift']:.6f}%")
     logger.info("=" * 60)
 
     # Save timing results to CSV
